@@ -1,0 +1,36 @@
+[gd_scene load_steps=8 format=3 uid="uid://piglejsu1lwq"]
+
+[ext_resource type="Shader" path="res://shaders/05_polar_coordinates/polar_coordinates.gdshader" id="2_se1n1"]
+[ext_resource type="Texture2D" uid="uid://b8ue3785fx15b" path="res://textures/icon.svg" id="3_0cipy"]
+[ext_resource type="PackedScene" uid="uid://kxt36ytuhpqx" path="res://scene_base.tscn" id="3_yt3ov"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_tw4y4"]
+
+[sub_resource type="Gradient" id="Gradient_gew8e"]
+offsets = PackedFloat32Array(0.2, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_e2ggo"]
+gradient = SubResource("Gradient_gew8e")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mwjdh"]
+render_priority = 0
+shader = ExtResource("2_se1n1")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/uv_tiling_offset_speed = Vector4(4, 1, 0, -1)
+shader_parameter/texture_albedo = ExtResource("3_0cipy")
+shader_parameter/mask = SubResource("GradientTexture2D_e2ggo")
+
+[node name="Root" type="Node3D"]
+
+[node name="SceneBase" parent="." instance=ExtResource("3_yt3ov")]
+
+[node name="PolarCoords" type="MeshInstance3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("QuadMesh_tw4y4")
+surface_material_override/0 = SubResource("ShaderMaterial_mwjdh")

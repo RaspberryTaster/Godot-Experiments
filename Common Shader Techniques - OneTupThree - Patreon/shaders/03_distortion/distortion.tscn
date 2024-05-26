@@ -1,0 +1,31 @@
+[gd_scene load_steps=8 format=3 uid="uid://chk27ngg3r87d"]
+
+[ext_resource type="PackedScene" uid="uid://kxt36ytuhpqx" path="res://scene_base.tscn" id="1_ticm5"]
+[ext_resource type="Shader" path="res://shaders/03_distortion/distortion.gdshader" id="2_7dqx3"]
+[ext_resource type="Texture2D" uid="uid://b8ue3785fx15b" path="res://textures/icon.svg" id="3_usp4v"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_13p78"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_rgrdu"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_qe7ij"]
+noise = SubResource("FastNoiseLite_rgrdu")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ii456"]
+render_priority = 0
+shader = ExtResource("2_7dqx3")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/distortion_intensity = 0.1
+shader_parameter/distortion_tiling = Vector2(1, 1)
+shader_parameter/distortion_offset_speed = Vector2(1, 1)
+shader_parameter/texture_albedo = ExtResource("3_usp4v")
+shader_parameter/noise = SubResource("NoiseTexture2D_qe7ij")
+
+[node name="Root" type="Node3D"]
+
+[node name="SceneBase" parent="." instance=ExtResource("1_ticm5")]
+
+[node name="Distortion" type="MeshInstance3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("QuadMesh_13p78")
+surface_material_override/0 = SubResource("ShaderMaterial_ii456")

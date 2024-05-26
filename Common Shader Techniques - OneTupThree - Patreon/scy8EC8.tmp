@@ -1,0 +1,224 @@
+[gd_scene load_steps=18 format=3 uid="uid://bxf0dnlmpdt6h"]
+
+[ext_resource type="Material" uid="uid://dhy6xy008ctmo" path="res://materials/checkerboard.tres" id="1_k2u1i"]
+[ext_resource type="Script" path="res://scythe_combo.gd" id="1_wkq23"]
+[ext_resource type="PackedScene" uid="uid://bjpyqxhaiumjx" path="res://player/player.tscn" id="3_nge17"]
+[ext_resource type="PackedScene" uid="uid://dnidvimx2m021" path="res://enemy/enemy.tscn" id="3_obtp0"]
+[ext_resource type="Material" uid="uid://durvrdq5kfmch" path="res://shaders/vignette/vignette.tres" id="4_8xy1a"]
+[ext_resource type="Material" uid="uid://iomo7vionp5h" path="res://shaders/distortion.tres" id="6_h8yx3"]
+[ext_resource type="ArrayMesh" uid="uid://c5lgq0yjnmllg" path="res://slash/meshes/Slash.res" id="6_igbyc"]
+[ext_resource type="Material" uid="uid://chypn0cumqbom" path="res://slash/slash.tres" id="8_tsbd8"]
+[ext_resource type="Material" uid="uid://oybtt2l26yli" path="res://slash/particles/slash_highlight_particles.tres" id="9_5qka5"]
+
+[sub_resource type="Environment" id="Environment_5b8sp"]
+tonemap_mode = 2
+glow_enabled = true
+glow_normalized = true
+glow_intensity = 0.07
+glow_bloom = 0.1
+fog_light_color = Color(0.5, 0.5, 0.5, 1)
+fog_light_energy = 0.15
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.01
+adjustment_enabled = true
+adjustment_contrast = 1.1
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_8xye5"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_avj0g"]
+material = ExtResource("1_k2u1i")
+
+[sub_resource type="Gradient" id="Gradient_cxjok"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_q56gl"]
+gradient = SubResource("Gradient_cxjok")
+
+[sub_resource type="Animation" id="Animation_psxta"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Player:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(-2, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Player:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Player:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="Animation" id="Animation_ohh78"]
+resource_name = "sequence"
+length = 8.0
+loop_mode = 1
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Player")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [],
+"method": &"idle"
+}, {
+"args": [],
+"method": &"attack"
+}]
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Player:position:x")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.0666332, -1.78851, -2, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(2.8, 3.2)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Player:position:y")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.0531232, 0.121886, 0.125, -0.0499981, 0.000281815, 0.0582561, -0.000328362, 0, -0.0435271, 0.121886, 0.25, 0),
+"times": PackedFloat32Array(2.8, 3, 3.2)
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Player:position:z")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(2.8, 3.2)
+}
+tracks/4/type = "method"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Enemy")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(2.75, 3.7, 5.8),
+"transitions": PackedFloat32Array(1, 1, 1),
+"values": [{
+"args": [1.0, 0.25],
+"method": &"shake"
+}, {
+"args": [1.0, 1.2],
+"method": &"shake"
+}, {
+"args": [1.25, 0.25],
+"method": &"shake"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0mrwd"]
+_data = {
+"RESET": SubResource("Animation_psxta"),
+"sequence": SubResource("Animation_ohh78")
+}
+
+[node name="ScytheCombo" type="Node3D"]
+script = ExtResource("1_wkq23")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(0.866025, 0.286788, -0.409576, 0, 0.819152, 0.573577, 0.5, -0.496732, 0.709406, -4.84276, 7.08929, 8.51143)
+current = true
+fov = 30.0
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_5b8sp")
+camera_attributes = SubResource("CameraAttributesPhysical_8xye5")
+
+[node name="Floor" type="MeshInstance3D" parent="Environment"]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0)
+material_override = ExtResource("1_k2u1i")
+mesh = SubResource("PlaneMesh_avj0g")
+skeleton = NodePath("../..")
+
+[node name="Light" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(0.494604, -0.867801, 0.047846, 0.170802, 0.151031, 0.973661, -0.85217, -0.473405, 0.222923, 0, 10, 0)
+shadow_enabled = true
+shadow_opacity = 0.3
+shadow_blur = 2.0
+directional_shadow_blend_splits = true
+
+[node name="Player" parent="." instance=ExtResource("3_nge17")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+
+[node name="Enemy" parent="." instance=ExtResource("3_obtp0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Vignette" type="TextureRect" parent="UI"]
+material = ExtResource("4_8xy1a")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture1D_q56gl")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_0mrwd")
+}
+
+[node name="DistortionTest" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+visible = false
+mesh = ExtResource("6_igbyc")
+surface_material_override/0 = ExtResource("6_h8yx3")
+
+[node name="Sword Slash" type="GPUParticles3D" parent="."]
+transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, 0, 0.25, 0)
+material_override = ExtResource("8_tsbd8")
+amount = 1
+lifetime = 0.75
+local_coords = true
+process_material = ExtResource("9_5qka5")
+draw_pass_1 = ExtResource("6_igbyc")

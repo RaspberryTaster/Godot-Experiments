@@ -1,0 +1,24 @@
+[gd_scene load_steps=6 format=3 uid="uid://dxdvdp4ycmi4m"]
+
+[ext_resource type="PackedScene" uid="uid://kxt36ytuhpqx" path="res://scene_base.tscn" id="1_ekmsu"]
+[ext_resource type="Shader" path="res://shaders/01_tiling_and_offset/tiling_and_offset.gdshader" id="2_2drgc"]
+[ext_resource type="Texture2D" uid="uid://b8ue3785fx15b" path="res://textures/icon.svg" id="2_iq4hq"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_13p78"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ii456"]
+render_priority = 0
+shader = ExtResource("2_2drgc")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/tiling = Vector2(2, 2)
+shader_parameter/offset = Vector2(1, 0)
+shader_parameter/texture_albedo = ExtResource("2_iq4hq")
+
+[node name="Root" type="Node3D"]
+
+[node name="SceneBase" parent="." instance=ExtResource("1_ekmsu")]
+
+[node name="TilingAndOffset" type="MeshInstance3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("QuadMesh_13p78")
+surface_material_override/0 = SubResource("ShaderMaterial_ii456")

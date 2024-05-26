@@ -1,0 +1,65 @@
+[gd_scene load_steps=13 format=3 uid="uid://b3euju62p62xg"]
+
+[ext_resource type="PackedScene" uid="uid://kxt36ytuhpqx" path="res://scene_base.tscn" id="1_kihth"]
+[ext_resource type="Shader" path="res://shaders/07_particle_lifetime/particle_lifetime.gdshader" id="2_vqpkt"]
+[ext_resource type="Texture2D" uid="uid://b8ue3785fx15b" path="res://textures/icon.svg" id="3_wo67l"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_opy4i"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_21qn6"]
+seamless = true
+noise = SubResource("FastNoiseLite_opy4i")
+
+[sub_resource type="Curve" id="Curve_jhj3p"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_jus1a"]
+texture_mode = 1
+curve = SubResource("Curve_jhj3p")
+
+[sub_resource type="Gradient" id="Gradient_77oup"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0.25, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mwa03"]
+gradient = SubResource("Gradient_77oup")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gs24f"]
+render_priority = 0
+shader = ExtResource("2_vqpkt")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/tiling = Vector2(1, 1)
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/erosion_max_offset = null
+shader_parameter/texture_albedo = ExtResource("3_wo67l")
+shader_parameter/mask = SubResource("GradientTexture2D_mwa03")
+shader_parameter/erosion = SubResource("NoiseTexture2D_21qn6")
+shader_parameter/erosion_curve = SubResource("CurveTexture_jus1a")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_36yw0"]
+lifetime_randomness = 0.5
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 1.0
+initial_velocity_max = 2.0
+scale_min = 0.5
+scale_max = 0.75
+
+[sub_resource type="QuadMesh" id="QuadMesh_k4fcp"]
+
+[node name="Root" type="Node3D"]
+
+[node name="SceneBase" parent="." instance=ExtResource("1_kihth")]
+
+[node name="ParticleLifetime" type="GPUParticles3D" parent="."]
+material_override = SubResource("ShaderMaterial_gs24f")
+transform_align = 1
+process_material = SubResource("ParticleProcessMaterial_36yw0")
+draw_pass_1 = SubResource("QuadMesh_k4fcp")

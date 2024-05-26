@@ -1,0 +1,129 @@
+[gd_scene load_steps=18 format=3 uid="uid://c7p467oxoanb8"]
+
+[ext_resource type="PackedScene" uid="uid://kxt36ytuhpqx" path="res://scene_base.tscn" id="1_nchgw"]
+[ext_resource type="Shader" uid="uid://bgqdh1n4kmfi3" path="res://shaders/06_depth_fade/depth_fade.tres" id="2_6sbbh"]
+[ext_resource type="Texture2D" uid="uid://b8ue3785fx15b" path="res://textures/icon.svg" id="3_ix6f8"]
+[ext_resource type="Texture2D" uid="uid://chrg3gbuhdcrq" path="res://textures/checkerboard.png" id="4_xojpr"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_13p78"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ijah4"]
+render_priority = 0
+shader = ExtResource("2_6sbbh")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/proximity_fade_distance = 0.5
+shader_parameter/x_movement_max = 1.0
+shader_parameter/texture_albedo = ExtResource("3_ix6f8")
+
+[sub_resource type="SphereMesh" id="SphereMesh_1hjro"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ha2e2"]
+shading_mode = 0
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_135bu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1087i"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+albedo_texture = ExtResource("4_xojpr")
+uv1_scale = Vector3(5, 5, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bolux"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_djcj1"]
+shading_mode = 0
+
+[sub_resource type="SphereMesh" id="SphereMesh_udlj4"]
+
+[sub_resource type="Shader" id="Shader_r1h4c"]
+code = "shader_type spatial;
+render_mode blend_mix,depth_draw_opaque,cull_disabled,diffuse_burley,specular_schlick_ggx,unshaded;
+
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color,filter_linear_mipmap,repeat_enable;
+
+uniform float proximity_fade_distance;
+uniform sampler2D depth_texture : 
+		hint_depth_texture, 
+		repeat_disable, 
+		filter_nearest;
+
+uniform sampler2D depth_color;
+
+void vertex() {}
+
+
+void fragment() {
+	vec2 base_uv = UV;
+	vec4 albedo_tex = texture(texture_albedo,base_uv);
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+	ALPHA *= albedo.a * albedo_tex.a;
+	
+	float depth_tex = textureLod(depth_texture, SCREEN_UV, 0.0).r;
+	vec4 world_pos = INV_PROJECTION_MATRIX 
+			* vec4(SCREEN_UV * 2.0-1.0, depth_tex, 1.0);
+	world_pos.xyz /= world_pos.w;
+	
+	float depth_fade = 1.0 - smoothstep(
+				world_pos.z + proximity_fade_distance,
+				world_pos.z,
+				VERTEX.z
+			);
+			
+	depth_fade = clamp(depth_fade, 0.0, 1.0);
+	
+	ALBEDO = mix(albedo.rgb, texture(depth_color, vec2(0.0)).rgb, 1.0 - depth_fade);
+}"
+
+[sub_resource type="Gradient" id="Gradient_iai7i"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0.0166669, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1pked"]
+gradient = SubResource("Gradient_iai7i")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hntfn"]
+render_priority = 0
+shader = SubResource("Shader_r1h4c")
+shader_parameter/albedo = Color(1, 0, 0, 0.501961)
+shader_parameter/proximity_fade_distance = 0.825
+shader_parameter/depth_color = SubResource("GradientTexture1D_1pked")
+
+[node name="Root" type="Node3D"]
+
+[node name="SceneBase" parent="." instance=ExtResource("1_nchgw")]
+
+[node name="DepthFade" type="MeshInstance3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("QuadMesh_13p78")
+surface_material_override/0 = SubResource("ShaderMaterial_ijah4")
+
+[node name="Sphere" type="MeshInstance3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, -1)
+mesh = SubResource("SphereMesh_1hjro")
+surface_material_override/0 = SubResource("StandardMaterial3D_ha2e2")
+
+[node name="ExtraExample" type="Node3D" parent="."]
+visible = false
+
+[node name="Floor" type="MeshInstance3D" parent="ExtraExample"]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("PlaneMesh_135bu")
+surface_material_override/0 = SubResource("StandardMaterial3D_1087i")
+
+[node name="Cube" type="MeshInstance3D" parent="ExtraExample"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -0.510707)
+mesh = SubResource("BoxMesh_bolux")
+surface_material_override/0 = SubResource("StandardMaterial3D_djcj1")
+
+[node name="Cube2" type="MeshInstance3D" parent="ExtraExample"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.75, 0, -0.75)
+mesh = SubResource("BoxMesh_bolux")
+surface_material_override/0 = SubResource("StandardMaterial3D_djcj1")
+
+[node name="Depth Fade Color" type="MeshInstance3D" parent="ExtraExample"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+mesh = SubResource("SphereMesh_udlj4")
+surface_material_override/0 = SubResource("ShaderMaterial_hntfn")

@@ -1,0 +1,25 @@
+[gd_scene load_steps=7 format=3 uid="uid://dvmgxbdvhj524"]
+
+[ext_resource type="PackedScene" uid="uid://kxt36ytuhpqx" path="res://scene_base.tscn" id="1_piekj"]
+[ext_resource type="Shader" path="res://shaders/04_erosion/erosion.gdshader" id="2_u1pnc"]
+[ext_resource type="Texture2D" uid="uid://1h8pfeajp5h6" path="res://shaders/04_erosion/erosion_tex.png" id="3_gotue"]
+[ext_resource type="Texture2D" uid="uid://b8ue3785fx15b" path="res://textures/icon.svg" id="3_ju05o"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_13p78"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ii456"]
+render_priority = 0
+shader = ExtResource("2_u1pnc")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/erosion_max_offset = 0.1
+shader_parameter/texture_albedo = ExtResource("3_ju05o")
+shader_parameter/erosion = ExtResource("3_gotue")
+
+[node name="Root" type="Node3D"]
+
+[node name="SceneBase" parent="." instance=ExtResource("1_piekj")]
+
+[node name="Erosion" type="MeshInstance3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("QuadMesh_13p78")
+surface_material_override/0 = SubResource("ShaderMaterial_ii456")
